@@ -1,0 +1,57 @@
+html, body, #app
+    min-height: 100vh
+    height: 100%
+    overflow: hidden
+    touch-action: manipulation
+
+*, *::before, *::after
+    position: relative
+
+@font-face
+    font-family: 'CascadiaCoded'
+    src: url('./fonts/CascadiaCode.woff2')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'Geologica'
+    src: url('./fonts/Geologica-Thin')
+    font-weight: 100
+
+@font-face
+    font-family: 'Geologica'
+    src: url('./fonts/Geologica-Bold')
+    font-weight: 700
+
+.max
+    height: 100%
+    width: 100%
+
+.hmax
+    height: 100%
+
+@mixin hideScrollBar
+    //隐藏默认滚动条
+    scrollbar-width: none // FireFox
+    -ms-overflow-style: none // IE
+    &::-webkit-scrollbar
+        display: none // Chrome & Safari
+
+@mixin absolute-full
+    position: absolute
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+
+.absolute-full
+    @include absolute-full
+
+.fade-enter-active, .fade-leave-active
+    transition: opacity 0.5s ease
+
+.fade-enter-from, .fade-leave-to
+    opacity: 0
+    
+.list-move
+    transition: all 0.5s ease

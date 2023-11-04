@@ -1,0 +1,29 @@
+{
+  "name": "joi-shareboard-backend",
+  "version": "0.0.0",
+  "main": "index.js",
+  "author": "Pid",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node index.js",
+    "bundev": "bun --hot index.js",
+    "db-init": "node tools/db-manage.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "express-fileupload": "^1.4.1",
+    "morgan": "^1.10.0",
+    "pg-promise": "^11.5.4",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
