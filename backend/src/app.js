@@ -23,10 +23,7 @@ app.use(morgan('dev'))
 app.use("/avatars", express.static('public/avatars'))
 
 app.get("/", (req, res)=>{
-    db.getUserByUid(1).then((data)=>{
-        console.log(data)
-        res.send(data)
-    })
+    res.send("BACKEND SERVING")
 })
 
 // 根据uid获取特定用户的信息

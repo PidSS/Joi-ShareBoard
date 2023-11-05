@@ -8,7 +8,7 @@
     "dev": "node index.js",
     "bundev": "bun --hot index.js",
     "db-init": "node tools/db-manage.js",
-    "start": "node index.js"
+    "start": "node tools/db-manage.js; node index.js;"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
