@@ -233,7 +233,7 @@ function handleDeleteSpace() {
 
         <n-input
             v-model:value="inputValue"
-            placeholder="空间名 - 你可以把名字起得很长，但我不建议"
+            placeholder="空间名 - 你可以把名字起得很长，但太长了很丑"
             size="large"
         />
 

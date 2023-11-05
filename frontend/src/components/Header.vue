@@ -359,7 +359,9 @@ export default {
                 >
                     <n-button class="spaceSelectBtn"
                         quaternary icon-placement="right">
-                        {{ spaceSelectedItem ? spaceSelectedItem.name : "加载中" }}
+                        <div class="textWrapper">
+                            {{ spaceSelectedItem ? spaceSelectedItem.name : "加载中" }}
+                        </div>
                         <template #icon>
                             <n-icon size="2rem"><ArrowDropDownRound /></n-icon>
                         </template>
@@ -531,12 +533,18 @@ export default {
             i
                 scale: 0.8
         .spaceSelectBtn
-            max-width: 10rem
+            max-width: 14rem
+            overflow: hidden
+            text-overflow: ellipsis
+            white-space: nowrap
             padding:
                 left: 12px
                 right: 5px
                 top: 0
                 bottom: 0
+            .textWrapper
+                overflow: hidden
+                text-overflow: ellipsis
     .n-input
         width: 25rem
 
@@ -559,6 +567,7 @@ export default {
     padding-right: calc(var(--n-option-padding-right)) !important
     .n-base-select-option__content
         width: 100% !important
+        padding-right: 2rem
 
 .searchInput.n-input .n-input__placeholder::before
         font:
