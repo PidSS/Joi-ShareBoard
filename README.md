@@ -2,7 +2,23 @@
 
 ***Joi shareboard*** 是一个在线剪贴板服务，支持多途径粘贴复制，Docker快速部署，Markdown编辑，多空间隔离。
 
+![preview](resources/Snipaste_2023-11-06_19-03-03.png)
+
 *Joi shareboard* 服务于线下断网比赛场景，期望为选手提供可快速部署、简单易用的文件和信息共享能力。因此，*Joi shareboard* 不打算替代notion。
+
+## 内容列表
+
+- [Joi shareboard](#joi-shareboard)
+  - [内容列表](#内容列表)
+  - [功能](#功能)
+  - [TODO](#todo)
+  - [部署](#部署)
+    - [对于docker部署](#对于docker部署)
+    - [对于原生部署](#对于原生部署)
+      - [前端](#前端)
+      - [后端](#后端)
+  - [技术栈](#技术栈)
+  - [License](#license)
 
 ## 功能
 - 注册 / 登陆 / 更改头像
