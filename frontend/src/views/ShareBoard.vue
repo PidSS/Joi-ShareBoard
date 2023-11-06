@@ -77,12 +77,11 @@ export default {
         },
 
         handleKbdFocusSearch(ev) {
-            // console.log(ev)
             if (ev.key==='Meta')
                 keyMetaOn = (ev.type==='keydown')
-            if (ev.key==='Contorl')
-                keyMetaOn = (ev.type==='keydown')
-            if (ev.key==='k' && ev.type==='keydown')
+            if (ev.key==='Control')
+                keyCtrlOn = (ev.type==='keydown')
+            if (ev.key==='k' && ev.type==='keydown' && (keyMetaOn || keyCtrlOn))
                 this.$refs.header.focusSearchBar()
         },
         
