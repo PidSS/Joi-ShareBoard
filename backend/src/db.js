@@ -44,17 +44,20 @@ exports.init = (debug) =>
         if (debug) console.log("[-] 空间表(spaces)创建成功")
 
         // 创建Main空间
-        const { sid } = await t.one('INSERT INTO spaces(name, owner, members) VALUES($1, $2, $3) RETURNING sid', ['Main', null, null])
-        await t.none('CREATE SCHEMA $1:name', spaceSchema(sid))
-        await t.none(`CREATE TABLE $1:name.index
-            (
-                bid smallserial NOT NULL,
-                content text NOT NULL,
-                poster_uid smallint NOT NULL,
-                created_at timestamp without time zone NOT NULL DEFAULT LOCALTIMESTAMP,
-                updated_at timestamp without time zone,
-                PRIMARY KEY (bid)
-            );`, spaceSchema(sid))
+        let records = await t.any('SELECT sid, name FROM spaces')
+        if ( records.length===0 ) {
+            const { sid } = await t.one('INSERT INTO spaces(name, owner, members) VALUES($1, $2, $3) RETURNING sid', ['Main', null, null])
+            await t.none('CREATE SCHEMA $1:name', spaceSchema(sid))
+            await t.none(`CREATE TABLE $1:name.index
+                (
+                    bid smallserial NOT NULL,
+                    content text NOT NULL,
+                    poster_uid smallint NOT NULL,
+                    created_at timestamp without time zone NOT NULL DEFAULT LOCALTIMESTAMP,
+                    updated_at timestamp without time zone,
+                    PRIMARY KEY (bid)
+                );`, spaceSchema(sid))
+        }
 
         if (debug) console.log("[-] 主空间(Main)创建成功")
         if (debug) console.log("[-] 数据库初始化完成")
