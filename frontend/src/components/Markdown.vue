@@ -1,13 +1,14 @@
 <script setup>
 import { useMessage } from 'naive-ui'
-
-const message = useMessage()
-
-import DOMPurify from 'dompurify'
 import {Marked} from "marked";
+import DOMPurify from 'dompurify'
 import {markedHighlight} from "marked-highlight";
 import 'highlight.js/styles/atom-one-dark.css'
 import hljs from 'highlight.js';
+import ClipboardJS from 'clipboard'
+
+
+const message = useMessage()
 
 const escapeTest = /[&<>"']/;
 const escapeReplace = new RegExp(escapeTest.source, 'g');
@@ -76,7 +77,6 @@ function mark(str) {
     return DOMPurify.sanitize(marked.parse( str ));
 }
 
-import ClipboardJS from 'clipboard'
 const randomID = Math.random().toString()
 const cb = new ClipboardJS(`.Markdown[data-random-id="${randomID}"] > .codecontainer > .headtool > button`,{
     text: trigger => trigger.parentNode.parentNode.lastElementChild.lastElementChild.innerText

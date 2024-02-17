@@ -45,6 +45,7 @@ exports.init = (debug) =>
 
         // 创建Main空间
         let records = await t.any('SELECT sid, name FROM spaces')
+        console.log(records)
         if ( records.length===0 ) {
             const { sid } = await t.one('INSERT INTO spaces(name, owner, members) VALUES($1, $2, $3) RETURNING sid', ['Main', null, null])
             await t.none('CREATE SCHEMA $1:name', spaceSchema(sid))

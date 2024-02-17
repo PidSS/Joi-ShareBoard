@@ -1,6 +1,5 @@
 <script setup>
 import { useThemeVars } from 'naive-ui'
-import { setTransitionHooks } from 'vue'
 const { scrollbarColor, scrollbarColorHover } = useThemeVars().value
 </script>
 

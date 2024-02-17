@@ -7,11 +7,11 @@ import axios from 'axios'
 import { mapWritableState } from 'pinia'
 import { useUserInfoStore } from '@/store/UserInfo.js'
 import { PaperPlane } from '@vicons/fa'
-const { primaryColor, primaryColorHover, primaryColorPressed, baseColor } = useThemeVars().value
 import { Add12Filled, Warning24Filled } from '@vicons/fluent'
 import { Clipboard, Edit } from '@vicons/tabler'
 import { DeleteFilled } from '@vicons/material'
 import ClipboardJS from 'clipboard'
+const { primaryColor, primaryColorHover, primaryColorPressed, baseColor } = useThemeVars().value
 
 const props = defineProps({
     preAdd: {
