@@ -1,11 +1,15 @@
 <script setup>
-import { useMessage } from 'naive-ui'
+import { useMessage, useThemeVars } from 'naive-ui'
 import {Marked} from "marked";
 import DOMPurify from 'dompurify'
 import {markedHighlight} from "marked-highlight";
 import 'highlight.js/styles/atom-one-dark.css'
 import hljs from 'highlight.js';
 import ClipboardJS from 'clipboard'
+
+const API_URL = import.meta.env.VITE_API_URL
+
+const { primaryColor, primaryColorHover } = useThemeVars().value
 
 
 const message = useMessage()
@@ -68,6 +72,17 @@ const marked = new Marked(
                     </pre>
                 </div>
                 `;
+            },
+            link(href, title, text) {
+                console.log({href, title, text})
+                const title_attr = title ? `title="${title}"` : ""
+                if (href.startsWith(`${API_URL}/download?filename=`)) {
+                    return `<a href="${href}" ${title_attr} class="downloadBtn">
+                        <svg t="1724660753949" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4259" width="64" height="64"><path d="M842.24 312.746667l-189.44-213.333334a42.666667 42.666667 0 0 0-31.573333-14.08h-341.333334A107.946667 107.946667 0 0 0 170.666667 192v640A107.946667 107.946667 0 0 0 279.893333 938.666667h464.213334A107.946667 107.946667 0 0 0 853.333333 832V341.333333a42.666667 42.666667 0 0 0-11.093333-28.586666zM597.333333 170.666667l159.573334 170.666666h-128a33.706667 33.706667 0 0 1-31.573334-36.266666z" p-id="4260" fill="currentColor"></path></svg>
+                        <span>${text}</span>
+                    </a>`
+                }
+                return `<a href="${href}" ${title_attr}>${text}</a>`
             }
         }
     }
@@ -176,4 +191,55 @@ export default {
             padding:
                 top: 1.2rem
                 bottom: 1.2rem
+
+.Markdown
+    a
+        text-underline-offset: 0.2em
+        color: v-bind(primaryColor)
+        &:hover
+            color: v-bind(primaryColorHover)
+    code:not(.hljs)
+        color: rgb(235, 87, 87)
+        background-color: rgba(135, 131, 120, 0.15)
+        padding: 0.2em 0.4em
+        margin: 0 0.1em
+        border-radius: 4px
+    blockquote
+        color: rgba(255, 255, 255, 0.5)
+        &::after
+            content: ''
+            position: absolute
+            top: 0
+            left: -1em
+            bottom: 0
+            width: 3px
+            background-color: rgba(255, 255, 255, 0.3)
+    table
+        border-collapse: collapse
+        th, td
+            border: solid rgba(255, 255, 255, 0.5) 1px
+            padding: 0.2em 0.75em
+    .downloadBtn
+        background-color: transparent
+        border: none
+        cursor: pointer
+        text-decoration: none
+        color: var(--n-text-color)
+        font-weight: bold
+        align-items: center
+        padding: 0.2em 0.1em 0.2em 0
+        margin: 0 0.1em
+        border-radius: 4px
+        svg
+            width: 1.2em
+            height: 1.2em
+            padding-bottom: 0.1em
+            vertical-align: middle
+        span
+            text-decoration: underline
+            text-decoration-color: rgba(255, 255, 255, 0.3)
+            text-underline-offset: 0.2em
+        &:hover
+            color: var(--n-text-color)
+            background-color: rgba(135, 131, 120, 0.15)
 </style>

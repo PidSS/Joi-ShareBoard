@@ -259,7 +259,23 @@ export default {
             axios.get(url)
                 .then( res => {
                     this.spaceList = res.data
-                    this.spaceSelected = this.spaceSelectOptions[0].value
+                    
+                    let stored_sid
+                    try {
+                        stored_sid = JSON.parse(localStorage.getItem('space_id'))
+                        if (typeof stored_sid !== 'number') {
+                            stored_sid = null
+                            localStorage.setItem('space_id', null)
+                        }
+                    }
+                    catch { stored_sid = null }
+
+                    if (stored_sid===null || stored_sid===undefined) {
+                        this.spaceSelected = this.spaceSelectOptions[0].value
+                    } else {
+                        const matched = this.spaceSelectOptions.find(v => v.value===stored_sid)
+                        this.spaceSelected = matched ? matched.value : this.spaceSelectOptions[0].value
+                    }
                 })
         },
 

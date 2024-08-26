@@ -29,7 +29,7 @@ exports.init = (debug) =>
             CONSTRAINT users_name_key UNIQUE (name)
         )`)
 
-        if (debug) console.log("[-] [用户表(users)创建成功")
+        if (debug) console.log("[-] 用户表(users)创建成功")
 
         // 创建spaces表
         await t.none(`CREATE TABLE IF NOT EXISTS public.spaces
@@ -43,9 +43,18 @@ exports.init = (debug) =>
 
         if (debug) console.log("[-] 空间表(spaces)创建成功")
 
+        // 创建files表
+        await t.none(`CREATE TABLE IF NOT EXISTS public.files
+        (
+            stored_name text NOT NULL,
+            original_name text NOT NULL,
+            PRIMARY KEY (stored_name)
+        )`)
+
+        if (debug) console.log("[-] 文件表(files)创建成功")
+
         // 创建Main空间
         let records = await t.any('SELECT sid, name FROM spaces')
-        console.log(records)
         if ( records.length===0 ) {
             const { sid } = await t.one('INSERT INTO spaces(name, owner, members) VALUES($1, $2, $3) RETURNING sid', ['Main', null, null])
             await t.none('CREATE SCHEMA $1:name', spaceSchema(sid))
@@ -256,7 +265,8 @@ exports.listBoards = (sid) =>
     db.any(`SELECT bid, poster_uid,
         to_char(created_at, 'YYYY/MM/DD HH24:MI') AS created_at,
         to_char(updated_at, 'YYYY/MM/DD HH24:MI') AS updated_at
-        FROM $1:name.index`, spaceSchema(sid))
+        FROM $1:name.index
+        ORDER BY COALESCE(updated_at, created_at)`, spaceSchema(sid))
 
 
 /**
@@ -314,7 +324,7 @@ exports.updateBoard = (sid, bid, content) => new Promise((resolve, reject) =>{
  * 删除剪贴板
  * @param {number} sid 空间sid
  * @param {number} bid 剪贴板bid
- * @returns {void}
+ * @returns {Promise<void>}
  * @throws {number} 0 没有找到对应剪贴板
  * @throws {number} 1 没有找到对应空间 
  */
@@ -330,4 +340,32 @@ exports.deleteBoard = (sid, bid) => new Promise((resolve, reject) =>{
             else
                 reject(err)
         })
+})
+
+
+
+/** ### 文件系统 */
+
+
+/**
+ * 保存存储文件名对应的原始文件名
+ * @param {string} stored_name
+ * @param {string} original_name
+ * @returns {Promise<void>}
+ * @throws stored_name 已存在
+ */
+exports.newFileRecord = (stored_name, original_name) =>
+    db.none('INSERT INTO files(stored_name, original_name) VALUES($1, $2)', [stored_name, original_name])
+
+
+/**
+ * 从存储文件名查询原始文件名
+ * @param {string} stored_name
+ * @returns {Promise<string>} original_name
+ * @throws 未找到
+ */
+exports.getFileOriginalName = (stored_name) => new Promise((resolve, reject)=>{
+    db.one('SELECT original_name FROM files WHERE stored_name=$1', stored_name)
+        .then( data => resolve(data.original_name) )
+        .catch( err => reject(err) )
 })

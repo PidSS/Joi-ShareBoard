@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 require('express-async-errors')
 const fileUpload = require('express-fileupload')
 const fs = require('fs')
@@ -6,6 +7,7 @@ const { v4: uuidv4 } = require('uuid')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const randString = require('string-random')
 
 const db = require('./db.js')
 const ResError = require('./err.js')
@@ -13,7 +15,9 @@ const ResError = require('./err.js')
 const app = express()
 
 app.use(fileUpload({
-    createParentPath: true
+    createParentPath: true,
+    defCharset: 'utf8',
+    defParamCharset: 'utf8'
 }))
 app.use(cors())
 app.use(bodyParser.json())
@@ -21,6 +25,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(morgan('dev'))
 
 app.use("/avatars", express.static('public/avatars'))
+app.use("/files", express.static('public/files'))
 
 app.get("/", (req, res)=>{
     res.send("BACKEND SERVING")
@@ -94,22 +99,84 @@ app.post("/uploadAvatar", (req, res)=>{
     if (req.files===undefined)
         throw new ResError(400, "上传图片缺失")
     const { file } = req.files
-    const fileExtenstion = file.name.split('.').pop()
+    const fileExt = path.extname(file.name)
 
     //生成唯一文件名
-    let newFileStoragePath, newFileName
+    let newFileStoragePath, newFileRoutePath
     do {
-        newFileName = uuidv4()
-        newFileStoragePath = `${ avatarStoragePath }/${ newFileName }.${ fileExtenstion }`
+        let newFileName = randString(8) + fileExt
+        newFileStoragePath = path.join(avatarStoragePath, newFileName)
+        newFileRoutePath = path.join(avatarRoutePath, newFileName)
     } while(fs.existsSync(newFileStoragePath))
 
+    // 保存头像到头像存储目录
     file.mv(newFileStoragePath, (err)=>{
         if (err)
             throw new Error("移动上传的头像时发生未知错误")
-        res.send()
+
+        res.send(newFileRoutePath)
     })
-    res.send(`${ avatarRoutePath }/${ newFileName }.${ fileExtenstion }`)
 })
+
+
+// 上传文件
+const filesStoragePath = 'public/files'
+const filesRoutePath = 'files'
+app.post("/uploadFile", async (req, res)=>{
+    console.log(req.files)
+    if (req.files===undefined)
+        throw new ResError(400, "上传文件缺失")
+    const { file } = req.files
+    const fileOriginalName = file.name
+    console.log(fileOriginalName)
+    const fileExt = path.extname(file.name)
+
+    // 生成唯一文件名
+    let newFileStoragePath, newFileRoutePath
+    while(true) {
+        let newFileName = randString(12) + fileExt
+        newFileStoragePath = path.join(filesStoragePath, newFileName)
+        newFileRoutePath = path.join(filesRoutePath, newFileName)
+
+        if (fs.existsSync(newFileStoragePath))
+            continue
+
+        // 在数据库中保存“存储的文件名”到“原始文件名”的映射，以便下载时使用
+        try { await db.newFileRecord(newFileName, fileOriginalName) }
+        catch { continue }
+
+        break // 如果上面两条判断（本地文件名无重复、数据库数据无重复）都通过，才会在这里 break；否则继续下一次循环，尝试新的文件名
+    }
+
+    // 保存文件到文件存储目录
+    file.mv(newFileStoragePath, (err)=>{
+        if (err)
+            throw new Error("移动上传的头像时发生未知错误")
+
+        res.send(newFileRoutePath)
+    })
+})
+
+
+// 下载指定的文件
+app.get("/download", async (req, res)=>{
+    const { filename } = req.query
+    if ( filename===undefined || filename==='' )
+        throw new ResError(400, "参数缺失：filename")
+
+    storedName = path.basename(filename) // 这样处理是为了方便前端直接请求 `files/[A-Za-z0-9.]+` 甚至 `api/files/[A-Za-z0-9.]+` 形式的文件名，顺便防止路径穿越
+
+    let originalName, fileStoragePath
+    try {
+        fileStoragePath = path.join(filesStoragePath, storedName)
+        if (!fs.statSync(fileStoragePath).isFile())
+            throw new Error()
+        originalName = await db.getFileOriginalName(storedName)
+    } catch(err) { console.log(err); throw new ResError(404, "文件不存在") }
+
+    res.download(fileStoragePath, originalName)
+})
+
 
 // 创建空间的超级接口
 app.post("/SuperCreateSpace", async (req,res)=>{

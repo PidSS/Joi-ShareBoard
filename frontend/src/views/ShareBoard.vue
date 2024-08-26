@@ -2,9 +2,10 @@
 import { nextTick } from 'vue'
 import BoardItem from '../components/BoardItem.vue'
 import Header from '../components/Header.vue'
+import UploadPanel from '../components/UploadPanel.vue'
 import { useThemeVars, NScrollbar } from 'naive-ui'
-const { primaryColor } = useThemeVars().value
 import axios from 'axios'
+const { primaryColor } = useThemeVars().value
 </script>
 
 <script>
@@ -20,16 +21,6 @@ let keyCtrlOn = false
 
 export default {
     data() {
-        let templist = [ newTempItem() ]
-        for (let i of [1001,1002,1003,1004,1005,1006,1007,1008]) {
-            templist.push([
-                i,
-                {
-                    bid: i,
-                    content: "# h1\n## h2\n### h3\n#### h4\n##### h5\n###### h6\n\nparagraph\n\n*italic*\n**bold**\n\n`inline code`\n```Python\ndef func(s):\n    print(s)\nprint(\"code block\")\n```\n\n> BlockQuote\n>> Nested\n\n- ul\n- ul\n\n1. li\n2. li"
-                }
-            ])
-        }
         return {
             space_id: undefined,
             boards: [ newTempItem() ],
@@ -100,6 +91,7 @@ export default {
 
     watch: {
         space_id(newVal, oldVal) {
+            localStorage.setItem('space_id', newVal ?? null)
             this.fetchBoards()
         }
     },
@@ -149,6 +141,9 @@ export default {
             </TransitionGroup>
         </n-scrollbar>
     </div>
+    <UploadPanel
+        class="UploadPanel"
+    />
 </template>
 
 <style lang="sass" scoped>
@@ -214,6 +209,11 @@ export default {
         to
             translate: 0 -1rem
             opacity: 0
+
+.UploadPanel
+    position: fixed
+    right: 4rem
+    bottom: 5rem
 
 </style>
 
